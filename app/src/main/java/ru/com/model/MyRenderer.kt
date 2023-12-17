@@ -90,13 +90,13 @@ class MyRenderer(ctx: Context) : GLSurfaceView.Renderer {
         pumpkin.setScale(0.015f, 0.015f, 0.015f)
 
         // sveta
-        val sun = GLObject.fromInputStream(
+        val light = GLObject.fromInputStream(
             baseShader,
             colorShader,
             ctx.assets.open("models/candle/candle.obj")
         )
-        sun.setPosition(0.0f, -2.0f, 0f)
-        sun.setScale(0.005f, 0.005f, 0.005f)
+        light.setPosition(0.0f, -2.0f, 0f)
+        light.setScale(0.005f, 0.005f, 0.005f)
 
         objects.add(table)
         objects.add(wmelon)
@@ -104,16 +104,14 @@ class MyRenderer(ctx: Context) : GLSurfaceView.Renderer {
         objects.add(pear)
         objects.add(pumpkin)
         objects.add(whiskey)
-        objects.add(sun)
+        objects.add(light)
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LEQUAL)
-
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
         for (obj in objects) {
             obj.onSurfaceCreated(gl, config)
         }
@@ -121,7 +119,6 @@ class MyRenderer(ctx: Context) : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
         glViewport(0, 0, width, height)
-
         for (obj in objects) {
             obj.onSurfaceChanged(gl, width, height)
         }
@@ -130,12 +127,9 @@ class MyRenderer(ctx: Context) : GLSurfaceView.Renderer {
     override fun onDrawFrame(gl: GL10) {
         glClearColor(bgColorR, bgColorG, bgColorB, bgColorA)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-
-        val sun = (objects[objects.size - 1] as GLObject)
-
+        val light = (objects[objects.size - 1] as GLObject)
         for (obj in objects) {
-            //            (obj as GLObject).rotateY += 1f
-            obj.setLightDirection(sun.x - obj.x, sun.y + 1f - obj.y, sun.z - obj.z)
+            obj.setLightDirection(light.x - obj.x, light.y + 1f - obj.y, light.z - obj.z)
             obj.onDrawFrame(gl)
         }
     }
